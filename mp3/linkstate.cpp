@@ -141,20 +141,12 @@ void dijkstra(Graph *graph, VertexType source){
     if(graph->vertexSet.find(source) == graph->vertexSet.end())
         return;
     //create forwarding table
-    ForwardTable forward;
+    ForwardTable &forward = graph->forwardTables[source];
     forward.resize(graph->numVertexes + 10, std::vector<EdgeType>(4, INF));
-
-    for(set<VertexType>::iterator iter = graph->vertexSet.begin(); iter != graph->vertexSet.end();iter ++){
-        VertexType dest = *iter;
-        forward[dest][DEST_VEX] = INF;// vertex
-        forward[dest][PRE_VEX] = INF;// pre vertex
-        forward[dest][MIN_COST] = INF;// min cost from source->vertex
-        forward[dest][NEXT_HOP] = INF;// next hop
-    }
     VertexType cur = INF;//current vertex
     EdgeType min = INF;
     set<VertexType> path;
-
+    //initialize the forwarding table
     for (set<VertexType>::iterator it = graph->vertexSet.begin(); it != graph->vertexSet.end();it ++){
         VertexType dest;
         dest = *it;
@@ -212,14 +204,6 @@ void dijkstra(Graph *graph, VertexType source){
             pre = forward[pre][PRE_VEX];
 
         }
-    }
-    //assign the forward table directly to the graph->forwardTables[source]
-    for (set<VertexType>::iterator it = graph->vertexSet.begin(); it != graph->vertexSet.end();it ++){
-        VertexType dest = *it;
-        graph->forwardTables[source][dest][DEST_VEX] = forward[dest][DEST_VEX];
-        graph->forwardTables[source][dest][PRE_VEX] = forward[dest][PRE_VEX];
-        graph->forwardTables[source][dest][MIN_COST] = forward[dest][MIN_COST];
-        graph->forwardTables[source][dest][NEXT_HOP] = forward[dest][NEXT_HOP];
     }
 }
 
@@ -300,7 +284,7 @@ void PrintForwardingTable(Graph *graph,ofstream& outputFile){
                     // cout << v <<" "<< forward[v][NEXT_HOP] <<" "<< forward[v][MIN_COST]<< endl;
                     outputFile << v <<" "<< forward[v][NEXT_HOP] <<" "<< forward[v][MIN_COST]<< endl;
                 }
-              }
+            }
             // cout << endl;
             outputFile << endl;
         }
